@@ -3,60 +3,80 @@
 #include <sstream>
 #include <vector>
 
-struct TR
+struct TradeRecord
 {
-    std::string SC;//SourceCurrency
-    std::string DC;//DestibationCurrency
-    float Lots;
-    double Price;
+    std::string sourceCurrency;
+    std::string destinationCurrency;
+    float lots;
+    double price;
 };
 
-class Processor
+class XmlGenerator{
+public:
+    void generateXml(const std::vector<TradeRecord>& trade_records)
+    {  
+        std::ostringstream xmlStream;
+        xmlStream << "<TradeRecords>" << std::endl;
+        for (const auto& record : trade_records) {
+            xmlStream << "\t<TradeRecord>" << std::endl;
+            xmlStream << "\t\t<SourceCurrency>" << record.sourceCurrency << "</SourceCurrency>" << std::endl;
+            xmlStream << "\t\t<DestinationCurrency>" << record.destinationCurrency << "</DestinationCurrency>" << std::endl;
+            xmlStream << "\t\t<Lots>" << record.lots << "</Lots>" << std::endl;
+            xmlStream << "\t\t<Price>" << record.price << "</Price>" << std::endl;
+            xmlStream << "\t</TradeRecord>" << std::endl;
+        }
+        xmlStream << "</TradeRecords>";
+        std::string xmlData = xmlStream.str();
+        std::ofstream outFile("output.xml"); // Output XML file
+        outFile << xmlData;
+        std::cout << "INFO: " << trade_records.size() << " trades processed" << std::endl;
+    }
+}; 
+
+
+class TradeProcessor
 {
 public:
-    void Process(std::istream& stream);
+    void processTrades(std::istream& stream);
     
 private:
-    static const float LotSize;
-    std::vector<std::string> SplitString(const std::string& str, char delimiter)
-    {
-        std::vector<std::string> tokens;
-        std::string token;
-        std::istringstream tokenStream(str);
-        while (std::getline(tokenStream, token, delimiter))
-        {
-            tokens.push_back(token);
-        }
-        return tokens;
-    }
+    static constexpr float lot_size{100000}; 
+    XmlGenerator xml_generator;    
+};
 
-    bool intGetFromString(const std::string& str, int& value)
+class TradeDataConversion
+{
+public:
+    static bool parseIntFromString(const std::string& str, int& value)
     {
         try
         {
             value = std::stoi(str);
             return true;
         }
-        catch (const std::exception&)
+        catch (const std::exception& error)
         {
+            std::cout << "Failed to parse integer from string: " << error.what() << std::endl;
             return false;
         }
     }
 
-    bool toDouble(const std::string& str, double& value)
+    static bool parseDoubleFromString(const std::string& str, double& value)
     {
         try
         {
             value = std::stod(str);
             return true;
         }
-        catch (const std::exception&)
-        {
+        catch (const std::exception& error)
+        {   
+            std::cout << "Failed to parse double from string: " << error.what() << std::endl;
             return false;
         }
     }
 };
-const float Processor::LotSize = 100000;
+
+
 
 // int main()
 // {

@@ -78,19 +78,4 @@ public:
 
 
 
-// int main()
-// {
-//     TradeProcessor processor;
-//     std::ifstream file("trades.txt");
-//     if (file.is_open())
-//     {
-//         processor.ProcessTrades(file);
-//         file.close();
-//     }
-//     else
-//     {
-//         std::cout << "Failed to open file" << std::endl;
-//     }
-//     return 0;
-// }
 

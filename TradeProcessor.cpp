@@ -17,7 +17,7 @@ void TradeProcessor::processTrades(std::istream& input_file)
         std::vector<std::string> fields;
 
         std::string trade_item;
-        std::istringstream tStream(trade_item);
+        std::istringstream tStream(item);
         while (std::getline(tStream, trade_item, ','))
         {
             fields.push_back(trade_item);
@@ -57,4 +57,21 @@ void TradeProcessor::processTrades(std::istream& input_file)
 
     xml_generator.generateXml(trade_records);
 
+}
+
+
+int main()
+{
+    TradeProcessor processor;
+    std::ifstream input_file("trades.txt");
+    if (input_file.is_open())
+    {
+        processor.processTrades(input_file);
+        input_file.close();
+    }
+    else
+    {
+        std::cout << "Failed to open file" << std::endl;
+    }
+    return 0;
 }
